@@ -11,14 +11,9 @@ fun func_g(message): message.
 fun func_d(message): message.
 equation forall x:message; func_d(x) = x.
 
-free k: key [private].
-free h: key [private].
-free j: key [private].
-
+free k, h, j: key [private].
 free a, b, c, d: channel.
-
-free m: message [private].
-free p: message [private].
+free m, p: message [private].
 
 query attacker(m).
 query attacker(p).
