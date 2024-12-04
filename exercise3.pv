@@ -1,41 +1,46 @@
 type key.
 type message.
 
+(* Encryption and decryption functions *)
 fun encrypt(message, key): message.
 fun decrypt(message, key): message.
 equation forall x:message, y:key; decrypt(encrypt(x, y), y) = x.
 equation forall x:message, y:key; encrypt(decrypt(x, y), y) = x.
 
+(* Function definitions *)
 fun func_f(message, message): message.
 fun func_g(message): message.
 fun func_d(message): message.
 equation forall x:message; func_d(x) = x.
 
+(* Attacker queries *)
 free k: key [private].
 free h: key [private].
 free j: key [private].
 
+(* Channels *)
 free a, b, c, d: channel.
 
+(*  Messages *)
 free m: message [private].
 free p: message [private].
 
+(* Attacker queries *)
 query attacker(m).
 query attacker(p).
 
 (* Protocol processes *)
 let A = 
+    in(a, enc_m: message); (* Receive encrypted m from channel a *)
     out(c, encrypt(m, k)). (* Send encrypted m to channel c *)
 
 let B = 
+    in(b, enc_p: message); (* Receive encrypted p from channel b *)
     out(c, encrypt(p, h)). (* Send encrypted p to channel c *)
 
 let C = 
     in(c, enc_m: message); (* Receive encrypted m from channel c *)
-    (* let m_dec = decrypt(enc_m, k) in Decrypt m using k *)
     in(c, enc_p: message); (* Receive encrypted p from channel c *)
-    (* let p_dec = decrypt(enc_p, h) in Decrypt p using h *)
-    (* let combined = func_f(m_dec, p_dec) in Combine m and p using func_f *)
     let combined = func_f(enc_m, enc_p) in (* Combine m and p using func_f *)
     out(d, combined). (* Send combined value to channel d *)
 
