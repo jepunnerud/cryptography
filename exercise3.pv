@@ -11,42 +11,32 @@ fun func_g(message): message.
 fun func_d(message): message.
 equation forall x:message; func_d(x) = x.
 
-free k: key [private].
-free h: key [private].
-free j: key [private].
-
+free k, h, j: key [private].
 free a, b, c, d: channel.
-
-free m: message [private].
-free p: message [private].
+free m, p: message [private].
 
 query attacker(m).
 query attacker(p).
 
-(* Protocol processes *)
 let A = 
-    out(c, encrypt(m, k)). (* Send encrypted m to channel c *)
+    in(a, enc_m: message);
+    out(c, encrypt(m, k)).
 
 let B = 
-    out(c, encrypt(p, h)). (* Send encrypted p to channel c *)
+    in(b, enc_p: message);
+    out(c, encrypt(p, h)).
 
 let C = 
-    in(c, enc_m: message); (* Receive encrypted m from channel c *)
-    (* let m_dec = decrypt(enc_m, k) in Decrypt m using k *)
-    in(c, enc_p: message); (* Receive encrypted p from channel c *)
-    (* let p_dec = decrypt(enc_p, h) in Decrypt p using h *)
-    (* let combined = func_f(m_dec, p_dec) in Combine m and p using func_f *)
-    let combined = func_f(enc_m, enc_p) in (* Combine m and p using func_f *)
-    out(d, combined). (* Send combined value to channel d *)
+    in(c, enc_m: message);
+    in(c, enc_p: message);
+    let combined = func_f(enc_m, enc_p) in
+    out(d, combined).
 
 let D = 
-    in(d, combined: message); (* Receive combined value from channel d *)
-    let m_dec = func_d(combined) in (* Extract m using func_d *)
-    out(a, encrypt(m_dec, j)); (* Send encrypted m on channel a *)
-    out(b, func_g(p)). (* Send func_g(p) on channel b *)
+    in(d, combined: message);
+    let m_dec = func_d(combined) in
+    out(a, encrypt(m_dec, j));
+    out(b, func_g(p)).
 
-(* Composition of the processes *)
 process
     !A | !B | !C | !D
-
-
