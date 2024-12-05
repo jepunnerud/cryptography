@@ -6,37 +6,37 @@ fun decrypt(message, key): message.
 equation forall x:message, y:key; decrypt(encrypt(x, y), y) = x.
 equation forall x:message, y:key; encrypt(decrypt(x, y), y) = x.
 
-fun func_f(message, message): message.
-fun func_g(message): message.
-fun func_d(message): message.
-equation forall x:message; func_d(x) = x.
+fun f(message, message): message.
+fun g(message): message.
+fun d(message): message.
+equation forall x:message; d(x) = x.
 
 free k, h, j: key [private].
-free a, b, c, d: channel.
+free ac, bc, cd, da, db: channel.
 free m, p: message [private].
 
 query attacker(m).
 query attacker(p).
 
 let A = 
-    in(a, enc_m: message);
-    out(c, encrypt(m, k)).
+    in(da, enc_m: message);
+    out(ac, encrypt(m, k)).
 
 let B = 
-    in(b, enc_p: message);
-    out(c, encrypt(p, h)).
+    in(db, enc_p: message);
+    out(bc, encrypt(p, h)).
 
 let C = 
-    in(c, enc_m: message);
-    in(c, enc_p: message);
-    let combined = func_f(enc_m, enc_p) in
-    out(d, combined).
+    in(ac, enc_m: message);
+    in(bc, enc_p: message);
+    let combined = f(enc_m, enc_p) in
+    out(cd, combined).
 
 let D = 
-    in(d, combined: message);
-    let m_dec = func_d(combined) in
-    out(a, encrypt(m_dec, j));
-    out(b, func_g(p)).
+    in(cd, combined: message);
+    let enc_m = d(combined) in
+    out(da, encrypt(enc_m, j));
+    out(db, g(p)).
 
 process
     !A | !B | !C | !D
