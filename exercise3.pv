@@ -29,13 +29,13 @@ let B =
 let C = 
     in(ac, enc_m: message);
     in(bc, enc_p: message);
-    let combined = f(enc_m, enc_p) in
+    let combined = f(m, p) in
     out(cd, combined).
 
 let D = 
     in(cd, combined: message);
-    let enc_m = d(combined) in
-    out(da, encrypt(enc_m, j));
+    let new_m = d(m) in
+    out(da, encrypt(new_m, j));
     out(db, g(p)).
 
 process
