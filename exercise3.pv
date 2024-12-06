@@ -12,31 +12,34 @@ fun d(message): message.
 equation forall x:message; d(x) = x.
 
 free k, h, j: key [private].
-free ac, bc, cd, da, db: channel.
+free c: channel.
 free m, p: message [private].
 
 query attacker(m).
 query attacker(p).
 
 let A = 
-    in(da, enc_m: message);
-    out(ac, encrypt(m, k)).
+    in(c, da_m: message);
+    let ac = encrypt(m, k) in
+    out(c, ac).
 
 let B = 
-    in(db, enc_p: message);
-    out(bc, encrypt(p, h)).
+    in(c, db_p: message);
+    let bc = encrypt(p, h) in
+    out(c, bc).
 
 let C = 
-    in(ac, enc_m: message);
-    in(bc, enc_p: message);
-    let combined = f(m, p) in
-    out(cd, combined).
+    in(c, ac_m: message);
+    in(c, bc_p: message);
+    let cd_mp = f(m, p) in
+    out(c, cd_mp).
 
 let D = 
-    in(cd, combined: message);
-    let new_m = d(m) in
-    out(da, encrypt(new_m, j));
-    out(db, g(p)).
+    in(c, cd_mp: message);
+    let da_m = encrypt(d(m), j) in
+    out(c, da_m);
+    let db_p = g(p) in
+    out(c, db_p).
 
 process
     !A | !B | !C | !D
